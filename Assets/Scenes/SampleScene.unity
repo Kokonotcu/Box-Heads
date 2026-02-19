@@ -1544,7 +1544,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidBodyP: {fileID: 1858493951}
-  speed: 20
+  speed: 10
   rotationOffset: {x: 0, y: 90, z: 0}
 --- !u!114 &1858493953
 MonoBehaviour:

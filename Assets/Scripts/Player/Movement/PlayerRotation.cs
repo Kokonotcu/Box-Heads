@@ -10,31 +10,32 @@ public class PlayerRotation : MonoBehaviour
 	[SerializeField] private float speed = 10.0f;
 	[SerializeField] private Vector3 rotationOffset = Vector3.zero;
 
-	private void OnEnable()
+	void FixedUpdate()
 	{
-		InputControl.Instance.SubscribeStarted(Rotate, "Move", true);
-		InputControl.Instance.SubscribeCancelled(Rotate, "Move");
-	}
-    private void OnDisable()
-    {
-        InputControl.Instance?.UnsubsribeAll(Rotate, "Move");
-        InputControl.Instance?.UnsubsribeAll(Rotate, "Move");
-    }
+		// 1. Get raw mouse position
+		Vector2 mousePos = Mouse.current.position.ReadValue();
 
-    void FixedUpdate()
-	{
-		if (moveInput!= Vector2.zero)
+		// 2. Create ray directly from camera to mouse position
+		Ray ray = Camera.main.ScreenPointToRay(mousePos);
+
+		if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
 		{
-			rigidBodyP.MoveRotation(Quaternion.Slerp(
-				transform.rotation,
-				Quaternion.LookRotation(new Vector3(moveInput.x, 0.0f, moveInput.y)) * Quaternion.Euler(rotationOffset),
-				speed * Time.deltaTime
-			));
-		}
-	}
+			// 3. Get direction on the XZ plane (keep Y at 0 to avoid tilting)
+			Vector3 targetDirection = (hit.point - transform.position).normalized;
+			targetDirection.y = 0;
 
-	public void Rotate(InputAction.CallbackContext ctx)
-	{
-		moveInput = ctx.ReadValue<Vector2>();
+			if (targetDirection != Vector3.zero)
+			{
+				// 4. Create target rotation
+				Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+
+				// 5. Smoothly rotate Rigidbody
+				rigidBodyP.MoveRotation(Quaternion.Slerp(
+					transform.rotation,
+					targetRotation * Quaternion.Euler(rotationOffset),
+					speed * Time.fixedDeltaTime // Use fixedDeltaTime in FixedUpdate
+				));
+			}
+		}
 	}
 }
