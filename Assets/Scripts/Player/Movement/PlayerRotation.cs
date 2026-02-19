@@ -17,8 +17,8 @@ public class PlayerRotation : MonoBehaviour
 	}
     private void OnDisable()
     {
-        InputControl.Instance.UnsubsribeAll(Rotate, "Move");
-        InputControl.Instance.UnsubsribeAll(Rotate, "Move");
+        InputControl.Instance?.UnsubsribeAll(Rotate, "Move");
+        InputControl.Instance?.UnsubsribeAll(Rotate, "Move");
     }
 
     void FixedUpdate()

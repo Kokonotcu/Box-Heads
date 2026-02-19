@@ -17,8 +17,8 @@ public class PlayerMovement : MonoBehaviour
 	}
     private void OnDisable()
     {
-        InputControl.Instance.UnsubsribeAll(Move, "Move");
-        InputControl.Instance.UnsubsribeAll(Move, "Move");
+        InputControl.Instance?.UnsubsribeAll(Move, "Move");
+        InputControl.Instance?.UnsubsribeAll(Move, "Move");
     }
 
     private void FixedUpdate()

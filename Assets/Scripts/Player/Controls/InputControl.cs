@@ -7,50 +7,39 @@ using static UnityEditor.Progress;
 
 public class InputControl : Singleton<InputControl>
 {
-	PlayerInput playerInput;
+	[SerializeField] PlayerInput playerInput;
 
 	InputAction.CallbackContext callbackContext = new InputAction.CallbackContext();
 	Dictionary<Action<InputAction.CallbackContext>, InputAction> held = new Dictionary<Action<InputAction.CallbackContext>, InputAction>();
-
-    PlayerInput PlayerInput {
-		get 
-		{
-			if (playerInput == null)
-				playerInput = GetComponent<PlayerInput>();
-			
-			return playerInput;
-        }  
-		set => playerInput = value; 
-	}
     public void SubscribeStarted(Action<InputAction.CallbackContext> subscriber, string actName, bool isHold = false)
 	{
 		if (isHold)
 		{
-            PlayerInput.actions[actName].performed += subscriber;
+            playerInput.actions[actName].performed += subscriber;
 		}
 		else
 		{
-            PlayerInput.actions[actName].started += subscriber;
+            playerInput.actions[actName].started += subscriber;
 		}
 	}
 
 	public void SubscribeCancelled(Action<InputAction.CallbackContext> subscriber, string actName)
 	{
-        PlayerInput.actions[actName].canceled += subscriber;
+        playerInput.actions[actName].canceled += subscriber;
 	}
 
 	public void SubscribeHeld(Action<InputAction.CallbackContext> subscriber, string actName)
 	{
-		held.Add(subscriber, PlayerInput.actions[actName]);
+		held.Add(subscriber, playerInput.actions[actName]);
 	}
 
 	public void UnsubsribeAll(Action<InputAction.CallbackContext> subscriber, string actName) 
 	{
-		if (PlayerInput == null)
+		if (playerInput == null || isQuitting)
 			return;
-        PlayerInput.actions[actName].canceled -= subscriber;
-        PlayerInput.actions[actName].performed -= subscriber;
-        PlayerInput.actions[actName].started -= subscriber;
+        playerInput.actions[actName].canceled -= subscriber;
+        playerInput.actions[actName].performed -= subscriber;
+        playerInput.actions[actName].started -= subscriber;
 		if (held.ContainsKey(subscriber))
 		{
 			held.Remove(subscriber);

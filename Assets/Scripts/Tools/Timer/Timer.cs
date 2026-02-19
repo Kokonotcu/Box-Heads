@@ -28,7 +28,7 @@ public class Timer : Singleton<Timer>
 
 	List<TimerData> timers = new List<TimerData>();
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (timers.Count > 0)
 		{

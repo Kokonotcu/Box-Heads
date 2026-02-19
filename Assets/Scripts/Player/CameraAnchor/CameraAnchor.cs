@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class CameraAnchor : MonoBehaviour
 {
-    [SerializeField] private Transform bodyTransform; // Reference to the player's transform
+    [SerializeField] private Transform playerTransform; // Reference to the player's transform
 	[SerializeField] private Vector3 offset; // Offset from the player position
 
 	// Update is called once per frame
-	void Update()
+	public Vector3 GetTarget()
     {
-        transform.position = bodyTransform.position +  offset;
+         return (playerTransform.position +  offset);
 	}
 }

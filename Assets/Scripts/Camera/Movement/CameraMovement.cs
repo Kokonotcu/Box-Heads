@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField] private Transform target;
+    [SerializeField] private CameraAnchor target;
 		
 	[Header("Movement Settings")]
 	[SerializeField] private float cameraSpeed = 10.0f;
@@ -10,7 +10,7 @@ public class CameraMovement : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		Vector3 diff = target.position - transform.position;
+		Vector3 diff = target.GetTarget() - transform.position;
 		if (diff.sqrMagnitude > triggerDistance)
 			transform.position += diff * Time.deltaTime * cameraSpeed;   
 	}
