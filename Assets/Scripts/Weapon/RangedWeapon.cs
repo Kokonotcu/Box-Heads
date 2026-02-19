@@ -3,12 +3,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using WeaponInterfaces;
 
-public class RangedWeapon : LateStarter, IRangedWeapon
+public class RangedWeapon : MonoBehaviour ,IRangedWeapon
 {
 	[SerializeField] private WeaponData weaponData;
 
 	private int currentClip;
 	private int currentAmmo;
+
 	private Timer.TimerData timerData;
 	private BulletLauncher bulletLauncher;
 
@@ -22,27 +23,32 @@ public class RangedWeapon : LateStarter, IRangedWeapon
 	public float ReloadTime { get { return weaponData.reloadTime; } }
 
 	public WeaponState State { get; set; } = WeaponState.Idle;
+    private void OnEnable()
+    {
+        InputControl.Instance.SubscribeHeld(Fire, "Attack");
+        InputControl.Instance.SubscribeCancelled(Idle, "Attack");
+    }
 
+    private void OnDisable()
+    {
+        InputControl.Instance.UnsubsribeAll(Fire, "Attack");
+        InputControl.Instance.UnsubsribeAll(Idle, "Attack");
+    }
+    private void Awake()
+    {
+        bulletLauncher = GetComponent<BulletLauncher>();
 
-	public override void LateAwake()
-	{
-		bulletLauncher = GetComponent<BulletLauncher>();
-		if (bulletLauncher == null)
-		{
-			Debug.LogError("BulletLauncher component is missing on the RangedWeapon.");
-			return;
-		}
-		bulletLauncher.Initialize(weaponData.bulletPrefab);
-		currentClip = MaxClip;
-		currentAmmo = MaxAmmo;
+        if (bulletLauncher == null)
+            return;
 
-		timerData = Timer.Instance.RequestTimer(FireRate);
+        bulletLauncher.Initialize(weaponData.bulletPrefab);
+        currentClip = MaxClip;
+        currentAmmo = MaxAmmo;
 
-		InputControl.Instance.SubscribeHeld(Fire, "Attack");
-		InputControl.Instance.SubscribeCancelled(Idle, "Attack");
-	}
+        timerData = Timer.Instance.RequestTimer(FireRate);
+    }
 
-	public void Fire(InputAction.CallbackContext ctx)
+    public void Fire(InputAction.CallbackContext ctx)
 	{
 		if (timerData.HasTriggered && State != WeaponState.OutOfAmmo)
 		{
@@ -82,13 +88,4 @@ public class RangedWeapon : LateStarter, IRangedWeapon
 			Debug.Log($"{WeaponName} is now idle.");
 		}
 	}
-
-	//private void OnDestroy()
-	//{
-	//	InputControl.Instance.UnsubsribeAll(Fire, "Attack");
-	//	if (timerData != null)
-	//	{
-	//		Timer.Instance.DeleteTimer(timerData);
-	//	}
-	//}
 }

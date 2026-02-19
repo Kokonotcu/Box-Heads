@@ -28,7 +28,15 @@ public class Timer : Singleton<Timer>
 
 	List<TimerData> timers = new List<TimerData>();
 
-	public TimerData RequestTimer(float frequency, Action callback = null)
+    private void OnDestroy()
+    {
+        if (timers.Count > 0)
+		{
+			timers.Clear();
+        }
+    }
+
+    public TimerData RequestTimer(float frequency, Action callback = null)
 	{
 		if (frequency <= 0)
 		{

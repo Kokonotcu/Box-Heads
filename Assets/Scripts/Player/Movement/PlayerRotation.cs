@@ -10,20 +10,25 @@ public class PlayerRotation : MonoBehaviour
 	[SerializeField] private float speed = 10.0f;
 	[SerializeField] private Vector3 rotationOffset = Vector3.zero;
 
-	private void Start()
+	private void OnEnable()
 	{
 		InputControl.Instance.SubscribeStarted(Rotate, "Move", true);
 		InputControl.Instance.SubscribeCancelled(Rotate, "Move");
 	}
+    private void OnDisable()
+    {
+        InputControl.Instance.UnsubsribeAll(Rotate, "Move");
+        InputControl.Instance.UnsubsribeAll(Rotate, "Move");
+    }
 
-	void FixedUpdate()
+    void FixedUpdate()
 	{
 		if (moveInput!= Vector2.zero)
 		{
 			rigidBodyP.MoveRotation(Quaternion.Slerp(
-																							transform.rotation,
-																							Quaternion.LookRotation(new Vector3(moveInput.x, 0.0f, moveInput.y)) * Quaternion.Euler(rotationOffset),
-																							speed * Time.deltaTime
+				transform.rotation,
+				Quaternion.LookRotation(new Vector3(moveInput.x, 0.0f, moveInput.y)) * Quaternion.Euler(rotationOffset),
+				speed * Time.deltaTime
 			));
 		}
 	}

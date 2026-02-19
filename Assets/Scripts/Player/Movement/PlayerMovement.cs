@@ -10,13 +10,18 @@ public class PlayerMovement : MonoBehaviour
 	[Header("Movement Settings")]
 	[SerializeField] private float speed = 10.0f;
 
-	private void Start()
+	private void OnEnable()
 	{
 		InputControl.Instance.SubscribeStarted(Move, "Move", true);
 		InputControl.Instance.SubscribeCancelled(Move, "Move");
 	}
+    private void OnDisable()
+    {
+        InputControl.Instance.UnsubsribeAll(Move, "Move");
+        InputControl.Instance.UnsubsribeAll(Move, "Move");
+    }
 
-	private void FixedUpdate()
+    private void FixedUpdate()
 	{
 		rigidBodyP.linearVelocity = new Vector3(moveInput.x * speed, rigidBodyP.linearVelocity.y, moveInput.y * speed);
 	}

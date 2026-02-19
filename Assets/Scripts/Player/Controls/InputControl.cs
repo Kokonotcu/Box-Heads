@@ -7,45 +7,50 @@ using static UnityEditor.Progress;
 
 public class InputControl : Singleton<InputControl>
 {
-	private PlayerInput playerInput;
-	InputAction.CallbackContext callbackContext;
-	Dictionary<Action<InputAction.CallbackContext>, InputAction> held;
+	PlayerInput playerInput;
 
-	void Start()
-    {
-		playerInput = GetComponent<PlayerInput>();
-		//For button hold activity
-		held = new Dictionary<Action<InputAction.CallbackContext>, InputAction>();
-		callbackContext = new InputAction.CallbackContext();
+	InputAction.CallbackContext callbackContext = new InputAction.CallbackContext();
+	Dictionary<Action<InputAction.CallbackContext>, InputAction> held = new Dictionary<Action<InputAction.CallbackContext>, InputAction>();
+
+    PlayerInput PlayerInput {
+		get 
+		{
+			if (playerInput == null)
+				playerInput = GetComponent<PlayerInput>();
+			
+			return playerInput;
+        }  
+		set => playerInput = value; 
 	}
-
-	public void SubscribeStarted(Action<InputAction.CallbackContext> subscriber, string actName, bool isHold = false)
+    public void SubscribeStarted(Action<InputAction.CallbackContext> subscriber, string actName, bool isHold = false)
 	{
 		if (isHold)
 		{
-			playerInput.actions[actName].performed += subscriber;
+            PlayerInput.actions[actName].performed += subscriber;
 		}
 		else
 		{
-			playerInput.actions[actName].started += subscriber;
+            PlayerInput.actions[actName].started += subscriber;
 		}
 	}
 
 	public void SubscribeCancelled(Action<InputAction.CallbackContext> subscriber, string actName)
 	{
-		playerInput.actions[actName].canceled += subscriber;
+        PlayerInput.actions[actName].canceled += subscriber;
 	}
 
 	public void SubscribeHeld(Action<InputAction.CallbackContext> subscriber, string actName)
 	{
-		held.Add(subscriber, playerInput.actions[actName]);
+		held.Add(subscriber, PlayerInput.actions[actName]);
 	}
 
 	public void UnsubsribeAll(Action<InputAction.CallbackContext> subscriber, string actName) 
 	{
-		playerInput.actions[actName].canceled -= subscriber;
-		playerInput.actions[actName].performed -= subscriber;
-		playerInput.actions[actName].started -= subscriber;
+		if (PlayerInput == null)
+			return;
+        PlayerInput.actions[actName].canceled -= subscriber;
+        PlayerInput.actions[actName].performed -= subscriber;
+        PlayerInput.actions[actName].started -= subscriber;
 		if (held.ContainsKey(subscriber))
 		{
 			held.Remove(subscriber);
