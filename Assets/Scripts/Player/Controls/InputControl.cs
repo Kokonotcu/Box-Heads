@@ -11,7 +11,17 @@ public class InputControl : Singleton<InputControl>
 
 	InputAction.CallbackContext callbackContext = new InputAction.CallbackContext();
 	Dictionary<Action<InputAction.CallbackContext>, InputAction> held = new Dictionary<Action<InputAction.CallbackContext>, InputAction>();
-    public void SubscribeStarted(Action<InputAction.CallbackContext> subscriber, string actName, bool isHold = false)
+	RaycastHit mouseHit = new RaycastHit { };
+
+	public RaycastHit MouseHit 
+	{
+		get 
+		{
+			return mouseHit;
+		}
+	}
+
+	public void SubscribeStarted(Action<InputAction.CallbackContext> subscriber, string actName, bool isHold = false)
 	{
 		if (isHold)
 		{
@@ -60,5 +70,14 @@ public class InputControl : Singleton<InputControl>
 				action.Key.Invoke(callbackContext);
 			}
 		}
+	}
+
+	private void FixedUpdate()
+	{
+		Vector2 mousePos = Mouse.current.position.ReadValue();
+		Ray ray = Camera.main.ScreenPointToRay(mousePos);
+
+		if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+			mouseHit = hit;		
 	}
 }
